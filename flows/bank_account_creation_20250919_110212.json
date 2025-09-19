@@ -1,0 +1,65 @@
+{
+  "workflow_name": "Bank Account Creation",
+  "description": "Workflow for creating new bank accounts.",
+  "version": "1.0",
+  "created_at": "2024-10-27T12:00:00Z",
+  "steps": [
+    {
+      "step_id": "step1",
+      "name": "Collect Customer Data",
+      "description": "Gather necessary information from the customer.",
+      "type": "input",
+      "parameters": {
+        "fields": [
+          "name",
+          "second_name",
+          "age",
+          "id_number"
+        ]
+      },
+      "next_step": "step2"
+    },
+    {
+      "step_id": "step2",
+      "name": "Data Validation",
+      "description": "Validate the collected customer data.",
+      "type": "processing",
+      "parameters": {
+        "validation_rules": {
+          "age": "must be above 18",
+          "id_number": "must be a valid ID format"
+        }
+      },
+      "next_step": "step3"
+    },
+    {
+      "step_id": "step3",
+      "name": "Account Creation",
+      "description": "Create a new bank account.",
+      "type": "processing",
+      "parameters": {
+        "database_connection": "bank_db"
+      },
+      "next_step": "step4"
+    },
+    {
+      "step_id": "step4",
+      "name": "Account Confirmation",
+      "description": "Send account confirmation to the customer.",
+      "type": "output",
+      "parameters": {
+        "confirmation_method": "email"
+      },
+      "next_step": null
+    }
+  ],
+  "flow_logic": "Sequential flow from step1 to step4.  If data validation fails in step2, the workflow should terminate.",
+  "system_instructions": "Follow each step sequentially.  For step 2, implement robust validation checks based on the parameters.  If validation fails, log the error and terminate the workflow.  Step 3 requires a secure database connection to create the account. Step 4 should send a confirmation email including account details. Ensure all data handling adheres to privacy regulations.",
+  "triggers": [
+    "User initiates account creation"
+  ],
+  "expected_outputs": [
+    "New bank account created",
+    "Account confirmation email sent"
+  ]
+}
