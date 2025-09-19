@@ -1,0 +1,56 @@
+{
+  "workflow_name": "Technical Support",
+  "description": "Technical troubleshooting and problem resolution workflow",
+  "version": "1.0",
+  "created_at": "2025-09-19T12:00:00.000Z",
+  "steps": [
+    {
+      "step_id": "problem_identification",
+      "name": "Identify Problem",
+      "description": "Understand the technical issue the customer is experiencing",
+      "type": "problem_diagnosis",
+      "parameters": {
+        "diagnostic_questions": ["What exactly is happening?", "When did this start?", "What were you doing when it occurred?"],
+        "error_code_collection": true
+      },
+      "next_step": "initial_troubleshooting"
+    },
+    {
+      "step_id": "initial_troubleshooting",
+      "name": "Basic Troubleshooting",
+      "description": "Guide customer through basic troubleshooting steps",
+      "type": "guided_troubleshooting",
+      "parameters": {
+        "basic_steps": ["restart", "check_connections", "update_software"],
+        "step_by_step_guidance": true
+      },
+      "next_step": "advanced_diagnosis"
+    },
+    {
+      "step_id": "advanced_diagnosis",
+      "name": "Advanced Diagnosis",
+      "description": "Perform deeper technical analysis if basic steps don't resolve the issue",
+      "type": "advanced_troubleshooting",
+      "parameters": {
+        "diagnostic_tools": ["system_logs", "performance_metrics", "configuration_check"],
+        "escalation_criteria": ["hardware_failure", "complex_software_issue"]
+      },
+      "next_step": "resolution_or_escalation"
+    },
+    {
+      "step_id": "resolution_or_escalation",
+      "name": "Resolve or Escalate",
+      "description": "Either resolve the issue or escalate to specialized technical team",
+      "type": "resolution",
+      "parameters": {
+        "resolution_methods": ["configuration_fix", "software_reinstall", "replacement"],
+        "escalation_path": "tier_2_support"
+      },
+      "next_step": null
+    }
+  ],
+  "flow_logic": "Progressive troubleshooting from basic to advanced with escalation path",
+  "system_instructions": "You are a technical support specialist. Help customers diagnose and resolve technical issues through systematic troubleshooting. Be patient, clear in your instructions, and escalate when necessary.",
+  "triggers": ["technical issue", "system problem", "troubleshooting request"],
+  "expected_outputs": ["problem_resolution", "troubleshooting_steps", "escalation_ticket"]
+}

@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from pipeline import pipeline
+from services.agent_manager import agent_manager
+from services.agent_pipeline import agent_pipeline
 
 # Load environment variables
 load_dotenv()
@@ -169,6 +171,280 @@ def chat_pipeline_api():
             'success': False,
             'error': f"Chat pipeline error: {str(e)}",
             'response': f"Pipeline error: {str(e)}"
+        }), 500
+
+# Agent Management API Endpoints
+
+@app.route('/api/agents', methods=['GET'])
+def list_agents():
+    """Get list of all agents"""
+    try:
+        agents = agent_manager.list_agents()
+        return jsonify({
+            'success': True,
+            'agents': agents
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>', methods=['GET'])
+def get_agent(agent_id):
+    """Get specific agent details"""
+    try:
+        agent = agent_manager.load_agent(agent_id)
+        if agent:
+            return jsonify({
+                'success': True,
+                'agent': agent.__dict__
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Agent not found'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents', methods=['POST'])
+def create_agent():
+    """Create a new agent"""
+    try:
+        data = request.json
+        name = data.get('name')
+        description = data.get('description', '')
+        system_prompt = data.get('system_prompt', '')
+        tools = data.get('tools', [])
+        flows = data.get('flows', [])
+        
+        if not name:
+            return jsonify({
+                'success': False,
+                'error': 'Agent name is required'
+            }), 400
+        
+        agent = agent_manager.create_agent(name, description, system_prompt, tools, flows)
+        
+        return jsonify({
+            'success': True,
+            'agent': agent.__dict__,
+            'message': f'Agent "{name}" created successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>', methods=['PUT'])
+def update_agent(agent_id):
+    """Update an existing agent"""
+    try:
+        data = request.json
+        success = agent_manager.update_agent(agent_id, **data)
+        
+        if success:
+            agent = agent_manager.load_agent(agent_id)
+            return jsonify({
+                'success': True,
+                'agent': agent.__dict__,
+                'message': 'Agent updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Agent not found or update failed'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>', methods=['DELETE'])
+def delete_agent(agent_id):
+    """Delete an agent"""
+    try:
+        success = agent_manager.delete_agent(agent_id)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Agent deleted successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Agent not found or deletion failed'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>/flows', methods=['GET'])
+def get_agent_flows(agent_id):
+    """Get flows for a specific agent"""
+    try:
+        flows = agent_manager.get_agent_flows(agent_id)
+        return jsonify({
+            'success': True,
+            'flows': flows
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>/flows/<flow_name>', methods=['POST'])
+def assign_flow_to_agent(agent_id, flow_name):
+    """Assign a flow to an agent"""
+    try:
+        success = agent_manager.assign_flow_to_agent(agent_id, flow_name)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Flow "{flow_name}" assigned to agent'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Assignment failed'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>/flows/<flow_name>', methods=['DELETE'])
+def remove_flow_from_agent(agent_id, flow_name):
+    """Remove a flow from an agent"""
+    try:
+        success = agent_manager.remove_flow_from_agent(agent_id, flow_name)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Flow "{flow_name}" removed from agent'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Removal failed'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/tools', methods=['GET'])
+def get_available_tools():
+    """Get list of available tools"""
+    try:
+        tools = agent_manager.get_available_tools()
+        return jsonify({
+            'success': True,
+            'tools': tools
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/flows', methods=['GET'])
+def get_available_flows():
+    """Get list of available flows"""
+    try:
+        flows = agent_manager.get_available_flows()
+        return jsonify({
+            'success': True,
+            'flows': flows
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/flows/<flow_id>', methods=['GET'])
+def get_flow_details(flow_id):
+    """Get details of a specific flow"""
+    try:
+        flow = agent_manager.get_flow_by_id(flow_id)
+        if flow:
+            return jsonify({
+                'success': True,
+                'flow': flow
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Flow not found'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/agents/<agent_id>/system-prompt', methods=['PUT'])
+def update_agent_system_prompt(agent_id):
+    """Update agent's system prompt"""
+    try:
+        data = request.json
+        system_prompt = data.get('system_prompt', '')
+        
+        if not system_prompt.strip():
+            return jsonify({
+                'success': False,
+                'error': 'System prompt cannot be empty'
+            }), 400
+        
+        success = agent_manager.update_agent(agent_id, system_prompt=system_prompt)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'System prompt updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Agent not found or update failed'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/chat/agent/<agent_id>', methods=['POST'])
+def chat_with_agent(agent_id):
+    """Chat with a specific agent"""
+    try:
+        data = request.json
+        user_message = data.get('message', '')
+        
+        # Use the new agent-aware pipeline
+        result = agent_pipeline.process_chat_with_agent(agent_id, user_message)
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'response': f"I apologize, but I encountered an error: {str(e)}"
         }), 500
 
 if __name__ == '__main__':

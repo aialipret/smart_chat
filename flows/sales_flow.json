@@ -1,0 +1,57 @@
+{
+  "workflow_name": "Sales Flow",
+  "description": "Sales process workflow for product recommendations and order processing",
+  "version": "1.0",
+  "created_at": "2025-09-19T12:00:00.000Z",
+  "steps": [
+    {
+      "step_id": "understand_needs",
+      "name": "Understand Customer Needs",
+      "description": "Discover what the customer is looking for",
+      "type": "needs_assessment",
+      "parameters": {
+        "discovery_questions": ["What are you looking for?", "What's your budget?", "When do you need it?"],
+        "qualification_criteria": ["budget", "timeline", "requirements"]
+      },
+      "next_step": "recommend_products"
+    },
+    {
+      "step_id": "recommend_products",
+      "name": "Recommend Products",
+      "description": "Suggest appropriate products based on customer needs",
+      "type": "product_recommendation",
+      "parameters": {
+        "recommendation_engine": "needs_based",
+        "max_recommendations": 3,
+        "include_alternatives": true
+      },
+      "next_step": "handle_objections"
+    },
+    {
+      "step_id": "handle_objections",
+      "name": "Handle Objections",
+      "description": "Address any customer concerns or objections",
+      "type": "objection_handling",
+      "parameters": {
+        "common_objections": ["price", "features", "timing"],
+        "response_strategies": ["value_demonstration", "feature_comparison", "flexible_terms"]
+      },
+      "next_step": "close_sale"
+    },
+    {
+      "step_id": "close_sale",
+      "name": "Close Sale",
+      "description": "Guide customer through purchase decision and process order",
+      "type": "sales_closure",
+      "parameters": {
+        "closing_techniques": ["assumptive", "alternative", "urgency"],
+        "order_processing": true
+      },
+      "next_step": null
+    }
+  ],
+  "flow_logic": "Consultative sales process with needs-based recommendations",
+  "system_instructions": "You are a knowledgeable sales consultant. Help customers discover products that meet their needs, provide expert recommendations, and guide them through the purchase process. Be consultative, not pushy.",
+  "triggers": ["product inquiry", "purchase interest", "sales consultation"],
+  "expected_outputs": ["product_recommendations", "order_details", "customer_satisfaction"]
+}

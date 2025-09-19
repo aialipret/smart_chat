@@ -1,0 +1,56 @@
+{
+  "workflow_name": "Customer Support Flow",
+  "description": "General customer support workflow for handling inquiries and issues",
+  "version": "1.0",
+  "created_at": "2025-09-19T12:00:00.000Z",
+  "steps": [
+    {
+      "step_id": "greet_customer",
+      "name": "Greet Customer",
+      "description": "Welcome the customer and understand their inquiry",
+      "type": "greeting",
+      "parameters": {
+        "greeting_message": "Hello! How can I help you today?",
+        "collect_issue_type": true
+      },
+      "next_step": "categorize_issue"
+    },
+    {
+      "step_id": "categorize_issue",
+      "name": "Categorize Issue",
+      "description": "Determine the type of customer issue or inquiry",
+      "type": "categorization",
+      "parameters": {
+        "categories": ["technical", "billing", "account", "general"],
+        "escalation_keywords": ["urgent", "complaint", "manager"]
+      },
+      "next_step": "provide_solution"
+    },
+    {
+      "step_id": "provide_solution",
+      "name": "Provide Solution",
+      "description": "Offer appropriate solution or information based on issue type",
+      "type": "solution_provision",
+      "parameters": {
+        "solution_database": "knowledge_base",
+        "escalation_threshold": "complex_issues"
+      },
+      "next_step": "follow_up"
+    },
+    {
+      "step_id": "follow_up",
+      "name": "Follow Up",
+      "description": "Ensure customer satisfaction and offer additional help",
+      "type": "follow_up",
+      "parameters": {
+        "satisfaction_check": true,
+        "additional_help_offer": true
+      },
+      "next_step": null
+    }
+  ],
+  "flow_logic": "Customer inquiry routing with escalation paths",
+  "system_instructions": "You are a helpful customer support representative. Listen to customer concerns, categorize their issues, and provide appropriate solutions. Be empathetic, professional, and solution-oriented.",
+  "triggers": ["customer inquiry", "support request", "help needed"],
+  "expected_outputs": ["issue_resolution", "customer_satisfaction", "escalation_if_needed"]
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Flow Builder & Banking Assistant</title>
+    <title>Multi-Agent AI System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -381,6 +381,31 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Modal fixes */
+        .modal {
+            z-index: 1055 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+        
+        .modal-dialog {
+            z-index: 1060 !important;
+        }
+        
+        /* Flow selection cards */
+        .flow-card {
+            transition: all 0.2s ease;
+            border: 2px solid var(--border-color);
+        }
+        
+        .flow-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
@@ -415,65 +440,107 @@
     <div class="main-container">
         <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-robot me-3"></i>AI Flow Builder & Banking Assistant</h1>
-            <p>Create intelligent workflows and interact with your AI-powered banking assistant</p>
+            <h1><i class="fas fa-users me-3"></i>Multi-Agent AI System</h1>
+            <p>Manage AI agents, configure workflows, and interact with specialized assistants</p>
         </div>
         
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab">
-                    <i class="fas fa-cogs me-2"></i>Workflow Builder
+                <button class="nav-link active" id="agents-tab" data-bs-toggle="tab" data-bs-target="#agents" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>Agent Management
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="workflows-tab" data-bs-toggle="tab" data-bs-target="#workflows" type="button" role="tab">
+                    <i class="fas fa-project-diagram me-2"></i>Workflow Builder
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">
-                    <i class="fas fa-comments me-2"></i>Banking Assistant
+                    <i class="fas fa-comments me-2"></i>Chat with Agents
                 </button>
             </li>
         </ul>
         
         <!-- Tab Content -->
         <div class="tab-content" id="mainTabContent">
-            <!-- Config Tab -->
-            <div class="tab-pane fade show active" id="config" role="tabpanel">
+            <!-- Agent Management Tab -->
+            <div class="tab-pane fade show active" id="agents" role="tabpanel">
                 <div class="row g-4">
-                    <div class="col-lg-6">
+                    <!-- Agent List -->
+                    <div class="col-lg-4">
                         <div class="card h-100">
-                            <div class="card-header">
-                                <i class="fas fa-edit me-2"></i>Workflow Description
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-users me-2"></i>Available Agents</span>
+                                <button class="btn btn-sm btn-primary" onclick="showCreateAgentModal()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
-                            <div class="card-body">
-                                <div class="mb-4">
-                                    <label for="flowInput" class="form-label fw-semibold">Describe your workflow:</label>
-                                    <textarea class="form-control config-textarea" id="flowInput" 
-                                        placeholder="Describe the workflow you want to create. For example:&#10;&#10;'Create a customer support workflow that first checks if the user is authenticated, then routes them to the appropriate department based on their issue type.'&#10;&#10;'Build a bank account creation process that collects customer information, validates it, and creates the account.'"></textarea>
+                            <div class="card-body p-0">
+                                <div id="agentsList" class="list-group list-group-flush">
+                                    <!-- Agents will be loaded here -->
                                 </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button class="btn btn-primary" onclick="generateFlow()">
-                                        <i class="fas fa-magic me-2"></i>Generate Flow
-                                    </button>
-                                    <button class="btn btn-success" onclick="saveFlow()" id="saveFlowBtn" disabled>
-                                        <i class="fas fa-save me-2"></i>Save Flow
-                                    </button>
-                                    <button class="btn btn-info" onclick="loadFlow()">
-                                        <i class="fas fa-folder-open me-2"></i>Load Flow
-                                    </button>
-                                </div>
-                                <div id="configStatus" class="mt-3"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    
+                    <!-- Agent Details -->
+                    <div class="col-lg-8">
                         <div class="card h-100">
                             <div class="card-header">
-                                <i class="fas fa-code me-2"></i>Generated Configuration
+                                <i class="fas fa-robot me-2"></i>Agent Configuration
                             </div>
                             <div class="card-body">
-                                <div id="generatedConfig" class="json-display">
-                                    Generated flow configuration will appear here...
-                                    
+                                <div id="agentDetails">
+                                    <div class="text-center text-muted py-5">
+                                        <i class="fas fa-robot fa-3x mb-3"></i>
+                                        <h5>Select an agent to view configuration</h5>
+                                        <p>Choose an agent from the list to see its details, flows, and tools.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workflow Builder Tab -->
+            <div class="tab-pane fade" id="workflows" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-magic me-2"></i>Workflow Builder
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-lg-6">
+                                        <div class="mb-4">
+                                            <label for="flowInput" class="form-label fw-semibold">Describe your workflow:</label>
+                                            <textarea class="form-control config-textarea" id="flowInput" 
+                                                placeholder="Describe the workflow you want to create. For example:&#10;&#10;'Create a customer support workflow that first checks if the user is authenticated, then routes them to the appropriate department based on their issue type.'&#10;&#10;'Build a bank account creation process that collects customer information, validates it, and creates the account.'"></textarea>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <button class="btn btn-primary" onclick="generateFlow()">
+                                                <i class="fas fa-magic me-2"></i>Generate Flow
+                                            </button>
+                                            <button class="btn btn-success" onclick="saveFlow()" id="saveFlowBtn" disabled>
+                                                <i class="fas fa-save me-2"></i>Save Flow
+                                            </button>
+                                            <button class="btn btn-info" onclick="loadFlow()">
+                                                <i class="fas fa-folder-open me-2"></i>Load Flow
+                                            </button>
+                                        </div>
+                                        <div id="configStatus" class="mt-3"></div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div id="generatedConfig" class="json-display">
+                                            Generated flow configuration will appear here...
+                                            
 Click "Generate Flow" to create your workflow configuration.
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -485,9 +552,29 @@ Click "Generate Flow" to create your workflow configuration.
             <div class="tab-pane fade" id="chat" role="tabpanel">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
-                        <div class="card">
+                        <!-- Agent Selection -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <label for="chatAgentSelect" class="form-label fw-semibold">Select Agent:</label>
+                                        <select class="form-select" id="chatAgentSelect" onchange="switchChatAgent()">
+                                            <option value="">Choose an agent to chat with...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <span class="status-badge status-success" id="agentStatus" style="display: none;">
+                                            <i class="fas fa-circle"></i>Online
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Interface -->
+                        <div class="card" id="chatInterface" style="display: none;">
                             <div class="card-header">
-                                <i class="fas fa-user-tie me-2"></i>Banking Assistant
+                                <i class="fas fa-robot me-2"></i><span id="currentAgentName">Agent</span>
                                 <span class="status-badge status-success ms-auto">
                                     <i class="fas fa-circle"></i>Online
                                 </span>
@@ -495,21 +582,12 @@ Click "Generate Flow" to create your workflow configuration.
                             <div class="card-body p-0">
                                 <div class="chat-container">
                                     <div class="chat-messages" id="chatMessages">
-                                        <div class="message assistant-message">
-                                            <div class="message-avatar assistant-avatar">
-                                                <i class="fas fa-robot"></i>
-                                            </div>
-                                            <div class="message-content">
-                                                Hello! I'm your AI banking assistant. I can help you create bank accounts and answer questions about banking services. 
-                                                
-To create a bank account, just provide your first name, last name, and ID number.
-                                            </div>
-                                        </div>
+                                        <!-- Messages will be added here -->
                                     </div>
                                     <div class="chat-input-container">
                                         <div class="chat-input-group">
                                             <textarea class="form-control chat-input" id="chatInput" 
-                                                placeholder="Type your message here... (e.g., 'I want to create a bank account')" 
+                                                placeholder="Type your message here..." 
                                                 rows="1" onkeypress="handleChatKeyPress(event)"></textarea>
                                             <button class="chat-send-btn" onclick="sendMessage()" id="sendBtn">
                                                 <i class="fas fa-paper-plane"></i>
@@ -519,7 +597,58 @@ To create a bank account, just provide your first name, last name, and ID number
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- No Agent Selected -->
+                        <div class="card" id="noAgentSelected">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Select an Agent to Start Chatting</h5>
+                                <p class="text-muted">Choose an agent from the dropdown above to begin your conversation.</p>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Agent Modal -->
+    <div class="modal fade" id="createAgentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Create New Agent</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createAgentForm">
+                        <div class="mb-3">
+                            <label for="agentName" class="form-label">Agent Name *</label>
+                            <input type="text" class="form-control" id="agentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="agentDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="agentDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="agentSystemPrompt" class="form-label">System Prompt *</label>
+                            <textarea class="form-control" id="agentSystemPrompt" rows="4" required 
+                                placeholder="Define how this agent should behave and what it can help with..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="agentTools" class="form-label">Available Tools</label>
+                            <select class="form-select" id="agentTools" multiple>
+                                <!-- Tools will be loaded here -->
+                            </select>
+                            <div class="form-text">Hold Ctrl/Cmd to select multiple tools</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createAgent()">
+                        <i class="fas fa-save me-2"></i>Create Agent
+                    </button>
                 </div>
             </div>
         </div>

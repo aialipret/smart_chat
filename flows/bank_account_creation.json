@@ -1,0 +1,46 @@
+{
+  "workflow_name": "Bank Account Creation",
+  "description": "Complete workflow for creating new bank accounts with validation and processing",
+  "version": "1.0",
+  "created_at": "2025-09-19T12:00:00.000Z",
+  "steps": [
+    {
+      "step_id": "collect_info",
+      "name": "Collect Customer Information",
+      "description": "Gather customer's personal information including name, surname, and ID",
+      "type": "input_collection",
+      "parameters": {
+        "required_fields": ["first_name", "last_name", "id_number"],
+        "validation_rules": {
+          "id_number": "6-12 digits"
+        }
+      },
+      "next_step": "validate_info"
+    },
+    {
+      "step_id": "validate_info",
+      "name": "Validate Information",
+      "description": "Validate the provided customer information",
+      "type": "validation",
+      "parameters": {
+        "validation_checks": ["id_format", "name_format", "duplicate_check"]
+      },
+      "next_step": "create_account"
+    },
+    {
+      "step_id": "create_account",
+      "name": "Create Bank Account",
+      "description": "Generate account number and create the bank account",
+      "type": "account_creation",
+      "parameters": {
+        "account_type": "standard",
+        "initial_balance": 0
+      },
+      "next_step": null
+    }
+  ],
+  "flow_logic": "Sequential processing with validation at each step",
+  "system_instructions": "You are a banking assistant specialized in account creation. Guide users through providing their information (first name, last name, ID number) and create accounts when valid information is provided.",
+  "triggers": ["account creation request", "new customer onboarding"],
+  "expected_outputs": ["account_number", "confirmation_message", "account_details"]
+}
